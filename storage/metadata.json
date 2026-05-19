@@ -22,5 +22,13 @@
         "upload_time": "2026-05-19T10:00:00",
         "expiration_time": "2026-05-25T10:00:00",
         "status": "downloaded"
+    },
+    {
+        "file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3",
+        "sender_id": "A",
+        "recipient_id": "B",
+        "upload_time": "2026-05-19T10:00:00",
+        "expiration_time": "2026-05-25T10:00:00",
+        "status": "downloaded"
     }
 ]

@@ -70,3 +70,41 @@
 [2026-05-19T13:32:14.118681+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 51136): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197534, "nonce": "L4y1JX9aojgmyamJDEZR1Q==", "payload": {"file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f", "user_id": "hacker"}}
 [2026-05-19T13:32:14.120053+00:00] UNAUTHORIZED_DOWNLOAD: hacker tried to download 32a16a21-9e3c-419e-a93d-031193d5fe7f
 [2026-05-19T13:32:14.120947+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 51136)
+[2026-05-19T14:08:04.988549+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:08:12.364730+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:09:09.186840+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:10:25.230919+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:11:53.785656+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:12:14.139343+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T14:13:50.631918+00:00] CONNECTION: Client connected: ('127.0.0.1', 51014)
+[2026-05-19T14:13:50.633502+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 51014): {"type": "CLIENT_HELLO", "session_id": null, "seq": 1, "timestamp": 1779200030, "nonce": "SvbRB0PAtOpPAu9BnJDAQA==", "payload": {"client_id": "clientA"}}
+[2026-05-19T14:13:50.635335+00:00] SERVER_HELLO: SERVER_HELLO sent to ('127.0.0.1', 51014)
+[2026-05-19T14:13:50.636489+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 51014)
+[2026-05-19T14:14:36.585037+00:00] CONNECTION: Client connected: ('127.0.0.1', 49902)
+[2026-05-19T14:14:36.586408+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 49902): {"type": "UPLOAD_REQUEST", "session_id": "test-session", "seq": 4, "timestamp": 1779200076, "nonce": "xughm/idtOaDJEkhxIWYbQ==", "payload": {"file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3", "sender_id": "A", "recipient_id": "B", "upload_time": "2026-05-19T10:00:00", "expiration_time": "2026-05-25T10:00:00", "encrypted_file": "VGhpcyBpcyBhIHRlc3QgZW5jcnlwdGVkIGZpbGU="}}
+[2026-05-19T14:14:36.592421+00:00] UPLOAD: A uploaded de777b38-4073-4b70-a195-c0e6f9d82ba3 for B
+[2026-05-19T14:14:36.593374+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 49902)
+[2026-05-19T14:14:58.255558+00:00] CONNECTION: Client connected: ('127.0.0.1', 55703)
+[2026-05-19T14:14:58.256816+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 55703): {"type": "LIST_REQUEST", "session_id": "test-session", "seq": 2, "timestamp": 1779200098, "nonce": "tsLmlm92IAL6SLkDDhTEgQ==", "payload": {"user_id": "B"}}
+[2026-05-19T14:14:58.277627+00:00] LIST_REQUEST: B requested file list
+[2026-05-19T14:14:58.278931+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 55703)
+[2026-05-19T14:15:06.594234+00:00] CONNECTION: Client connected: ('127.0.0.1', 55704)
+[2026-05-19T14:15:06.594959+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 55704): {"type": "LIST_REQUEST", "session_id": "test-session", "seq": 2, "timestamp": 1779200106, "nonce": "uLlZ0QrzigSzyf+RYqy+mA==", "payload": {"user_id": "a"}}
+[2026-05-19T14:15:06.597257+00:00] LIST_REQUEST: a requested file list
+[2026-05-19T14:15:06.598051+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 55704)
+[2026-05-19T14:15:10.976106+00:00] CONNECTION: Client connected: ('127.0.0.1', 55705)
+[2026-05-19T14:15:10.977199+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 55705): {"type": "LIST_REQUEST", "session_id": "test-session", "seq": 2, "timestamp": 1779200110, "nonce": "l2LrbgLp9nOg+pGZx5cJTg==", "payload": {"user_id": "A"}}
+[2026-05-19T14:15:10.978276+00:00] LIST_REQUEST: A requested file list
+[2026-05-19T14:15:10.979050+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 55705)
+[2026-05-19T14:16:12.571520+00:00] CONNECTION: Client connected: ('127.0.0.1', 58853)
+[2026-05-19T14:16:12.572622+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58853): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779200172, "nonce": "EzlKrwk93QxfW+XT5q1PvQ==", "payload": {"file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3", "user_id": "B"}}
+[2026-05-19T14:16:12.579367+00:00] DOWNLOAD: B downloaded de777b38-4073-4b70-a195-c0e6f9d82ba3
+[2026-05-19T14:16:12.580212+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58853)
+[2026-05-19T14:16:17.986899+00:00] CONNECTION: Client connected: ('127.0.0.1', 58854)
+[2026-05-19T14:16:17.988393+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58854): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779200177, "nonce": "8pgv7/o2kh/pKR6dYATjBA==", "payload": {"file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3", "user_id": "A"}}
+[2026-05-19T14:16:18.006460+00:00] UNAUTHORIZED_DOWNLOAD: A tried to download de777b38-4073-4b70-a195-c0e6f9d82ba3
+[2026-05-19T14:16:18.007580+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58854)
+[2026-05-19T14:16:27.792870+00:00] CONNECTION: Client connected: ('127.0.0.1', 58855)
+[2026-05-19T14:16:27.794421+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58855): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779200187, "nonce": "Yu0YF8EHZgdVFfYrUrReCw==", "payload": {"file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3", "user_id": "B"}}
+[2026-05-19T14:16:27.796933+00:00] REPEATED_DOWNLOAD: B tried to download already downloaded file de777b38-4073-4b70-a195-c0e6f9d82ba3
+[2026-05-19T14:16:27.798243+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58855)

@@ -20,6 +20,7 @@ def fake_encrypt_file_content(text):
 
 def send_message(message):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
     client.connect((HOST, PORT))
 
     client.sendall(json.dumps(message).encode())
@@ -30,6 +31,21 @@ def send_message(message):
     print(json.dumps(json.loads(response.decode()), indent=4))
 
     client.close()
+
+
+def hello():
+    message = {
+        "type": "CLIENT_HELLO",
+        "session_id": None,
+        "seq": 1,
+        "timestamp": int(time.time()),
+        "nonce": generate_nonce(),
+        "payload": {
+            "client_id": "clientA"
+        }
+    }
+
+    send_message(message)
 
 
 def upload(sender_id, recipient_id):
@@ -81,21 +97,6 @@ def download(file_id, user_id):
         "payload": {
             "file_id": file_id,
             "user_id": user_id
-        }
-    }
-
-    send_message(message)
-
-
-def hello():
-    message = {
-        "type": "CLIENT_HELLO",
-        "session_id": None,
-        "seq": 1,
-        "timestamp": int(time.time()),
-        "nonce": generate_nonce(),
-        "payload": {
-            "client_id": "clientA"
         }
     }
 
