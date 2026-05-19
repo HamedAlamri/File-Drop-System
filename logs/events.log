@@ -1,0 +1,72 @@
+[2026-05-19T12:53:41.296311+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T12:55:49.219494+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T12:55:56.035576+00:00] CONNECTION: Client connected: ('127.0.0.1', 50365)
+[2026-05-19T12:55:56.039941+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 50365): {"type": "LIST_REQUEST", "session_id": "test-session", "seq": 2, "timestamp": 1779195356, "nonce": "dwmQww5AD6PX7MiKt/vR+g==", "payload": {"user_id": "clientB"}}
+[2026-05-19T12:55:56.066361+00:00] LIST_REQUEST: clientB requested file list
+[2026-05-19T12:55:56.068752+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 50365)
+[2026-05-19T13:11:52.617129+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T13:12:05.389209+00:00] CONNECTION: Client connected: ('127.0.0.1', 63646)
+[2026-05-19T13:12:05.392851+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 63646): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196325, "nonce": "kbXSVmF3VQnSEK5sggHoEw==", "payload": {"file_id": "93d272c2-ac5f-4d84-9675-1584e2e44223", "user_id": "clientB"}}
+[2026-05-19T13:12:05.431773+00:00] DOWNLOAD_FAILED: clientB requested missing file 93d272c2-ac5f-4d84-9675-1584e2e44223
+[2026-05-19T13:12:05.434492+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 63646)
+[2026-05-19T13:13:08.889745+00:00] CONNECTION: Client connected: ('127.0.0.1', 58017)
+[2026-05-19T13:13:08.892642+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58017): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196388, "nonce": "rZSonVZO5nRldkp0DpFJ7A==", "payload": {"file_id": "93d272c2-ac5f-4d84-9675-1584e2e44223", "user_id": "clientB"}}
+[2026-05-19T13:13:08.899557+00:00] DOWNLOAD_FAILED: clientB requested missing file 93d272c2-ac5f-4d84-9675-1584e2e44223
+[2026-05-19T13:13:08.901861+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58017)
+[2026-05-19T13:14:37.924464+00:00] CONNECTION: Client connected: ('127.0.0.1', 62702)
+[2026-05-19T13:14:37.925540+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 62702): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196477, "nonce": "4Vb5eODOIybIpHJ2IVIRMw==", "payload": {"file_id": "file123", "user_id": "clientB"}}
+[2026-05-19T13:14:37.927744+00:00] EXPIRED_FILE_ACCESS: clientB tried to download expired file file123
+[2026-05-19T13:14:37.929404+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 62702)
+[2026-05-19T13:15:32.672693+00:00] CONNECTION: Client connected: ('127.0.0.1', 61914)
+[2026-05-19T13:15:32.673560+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 61914): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196532, "nonce": "hr0c6bhZUT90FKbFpAzi3Q==", "payload": {"file_id": "file123", "user_id": "clientB"}}
+[2026-05-19T13:15:32.676988+00:00] DOWNLOAD_FAILED: Encrypted content missing for file123
+[2026-05-19T13:15:32.678347+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 61914)
+[2026-05-19T13:15:47.139940+00:00] CONNECTION: Client connected: ('127.0.0.1', 61919)
+[2026-05-19T13:15:47.141181+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 61919): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196547, "nonce": "Q9PzNtYFUYsX4jtnNCflHg==", "payload": {"file_id": "file123", "user_id": "clientB"}}
+[2026-05-19T13:15:47.143269+00:00] DOWNLOAD_FAILED: Encrypted content missing for file123
+[2026-05-19T13:15:47.144934+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 61919)
+[2026-05-19T13:19:22.918940+00:00] SERVER_START: Server started on 127.0.0.1:9090
+[2026-05-19T13:19:59.880965+00:00] CONNECTION: Client connected: ('127.0.0.1', 65172)
+[2026-05-19T13:19:59.882674+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 65172): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779196799, "nonce": "JBga2/fUfXVwJ5n052V0Bg==", "payload": {"file_id": "file123", "user_id": "clientB"}}
+[2026-05-19T13:19:59.885796+00:00] DOWNLOAD_FAILED: Encrypted content missing for file123
+[2026-05-19T13:19:59.887338+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 65172)
+[2026-05-19T13:26:01.480689+00:00] CONNECTION: Client connected: ('127.0.0.1', 64672)
+[2026-05-19T13:26:01.481832+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 64672): {"type": "UPLOAD_REQUEST", "session_id": "test-session", "seq": 4, "timestamp": 1779197161, "nonce": "vdBKAoCV4MCnEI2GmEewrg==", "payload": {"file_id": "8998b9f5-cdac-4593-bd54-b57e4630a39e", "sender_id": "clientA", "recipient_id": "clientB", "upload_time": "2026-05-19T10:00:00", "expiration_time": "2026-05-25T10:00:00", "encrypted_file": "VGhpcyBpcyBhIHRlc3QgZW5jcnlwdGVkIGZpbGU="}}
+[2026-05-19T13:26:01.487401+00:00] UPLOAD: clientA uploaded 8998b9f5-cdac-4593-bd54-b57e4630a39e for clientB
+[2026-05-19T13:26:01.488377+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 64672)
+[2026-05-19T13:26:36.136226+00:00] CONNECTION: Client connected: ('127.0.0.1', 58599)
+[2026-05-19T13:26:36.137757+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58599): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197196, "nonce": "OPR5UdbupxfaZgrQPiSe0A==", "payload": {"file_id": "8998b9f5-cdac-4593-bd54-b57e4630a39e", "user_id": "clientB"}}
+[2026-05-19T13:26:36.163410+00:00] DOWNLOAD: clientB downloaded 8998b9f5-cdac-4593-bd54-b57e4630a39e
+[2026-05-19T13:26:36.164386+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58599)
+[2026-05-19T13:26:44.663978+00:00] CONNECTION: Client connected: ('127.0.0.1', 57116)
+[2026-05-19T13:26:44.665338+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 57116): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197204, "nonce": "GWaOneFmQSDFJ4iQJGFLUA==", "payload": {"file_id": "8998b9f5-cdac-4593-bd54-b57e4630a39e", "user_id": "clientB"}}
+[2026-05-19T13:26:44.692225+00:00] REPEATED_DOWNLOAD: clientB tried to download already downloaded file 8998b9f5-cdac-4593-bd54-b57e4630a39e
+[2026-05-19T13:26:44.693725+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 57116)
+[2026-05-19T13:29:26.957722+00:00] CONNECTION: Client connected: ('127.0.0.1', 65031)
+[2026-05-19T13:29:26.958858+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 65031): {"type": "CLIENT_HELLO", "session_id": null, "seq": 1, "timestamp": 1779197366, "nonce": "16N/BOaw0vkHpKU3UGB95w==", "payload": {"client_id": "clientA"}}
+[2026-05-19T13:29:26.960231+00:00] SERVER_HELLO: SERVER_HELLO sent to ('127.0.0.1', 65031)
+[2026-05-19T13:29:26.961227+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 65031)
+[2026-05-19T13:29:54.370851+00:00] CONNECTION: Client connected: ('127.0.0.1', 54808)
+[2026-05-19T13:29:54.371928+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 54808): {"type": "UPLOAD_REQUEST", "session_id": "test-session", "seq": 4, "timestamp": 1779197394, "nonce": "99ufphV7n/lnlKGoFIn+aw==", "payload": {"file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f", "sender_id": "clientA", "recipient_id": "clientB", "upload_time": "2026-05-19T10:00:00", "expiration_time": "2026-05-25T10:00:00", "encrypted_file": "VGhpcyBpcyBhIHRlc3QgZW5jcnlwdGVkIGZpbGU="}}
+[2026-05-19T13:29:54.377244+00:00] UPLOAD: clientA uploaded 32a16a21-9e3c-419e-a93d-031193d5fe7f for clientB
+[2026-05-19T13:29:54.378410+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 54808)
+[2026-05-19T13:30:05.086311+00:00] CONNECTION: Client connected: ('127.0.0.1', 54809)
+[2026-05-19T13:30:05.087275+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 54809): {"type": "LIST_REQUEST", "session_id": "test-session", "seq": 2, "timestamp": 1779197405, "nonce": "MZosbsGuuqmAl5GGEh5ryw==", "payload": {"user_id": "clientB"}}
+[2026-05-19T13:30:05.107290+00:00] LIST_REQUEST: clientB requested file list
+[2026-05-19T13:30:05.108755+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 54809)
+[2026-05-19T13:30:14.406671+00:00] CONNECTION: Client connected: ('127.0.0.1', 57052)
+[2026-05-19T13:30:14.408162+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 57052): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197414, "nonce": "r2qMANYmnwilZjCSrtT5Pw==", "payload": {"file_id": "FILE_ID", "user_id": "clientB"}}
+[2026-05-19T13:30:14.409724+00:00] DOWNLOAD_FAILED: clientB requested missing file FILE_ID
+[2026-05-19T13:30:14.410755+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 57052)
+[2026-05-19T13:30:40.566166+00:00] CONNECTION: Client connected: ('127.0.0.1', 55997)
+[2026-05-19T13:30:40.567229+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 55997): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197440, "nonce": "Dg2RSnHHqyHtyqwnXckzgA==", "payload": {"file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f", "user_id": "clientB"}}
+[2026-05-19T13:30:40.574588+00:00] DOWNLOAD: clientB downloaded 32a16a21-9e3c-419e-a93d-031193d5fe7f
+[2026-05-19T13:30:40.575518+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 55997)
+[2026-05-19T13:31:38.215402+00:00] CONNECTION: Client connected: ('127.0.0.1', 58980)
+[2026-05-19T13:31:38.216603+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 58980): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197498, "nonce": "XHPL9KnxU0Qmp3duJtq87Q==", "payload": {"file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f", "user_id": "clientB"}}
+[2026-05-19T13:31:38.246786+00:00] REPEATED_DOWNLOAD: clientB tried to download already downloaded file 32a16a21-9e3c-419e-a93d-031193d5fe7f
+[2026-05-19T13:31:38.248324+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 58980)
+[2026-05-19T13:32:14.117864+00:00] CONNECTION: Client connected: ('127.0.0.1', 51136)
+[2026-05-19T13:32:14.118681+00:00] MESSAGE_RECEIVED: From ('127.0.0.1', 51136): {"type": "DOWNLOAD_REQUEST", "session_id": "test-session", "seq": 6, "timestamp": 1779197534, "nonce": "L4y1JX9aojgmyamJDEZR1Q==", "payload": {"file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f", "user_id": "hacker"}}
+[2026-05-19T13:32:14.120053+00:00] UNAUTHORIZED_DOWNLOAD: hacker tried to download 32a16a21-9e3c-419e-a93d-031193d5fe7f
+[2026-05-19T13:32:14.120947+00:00] DISCONNECTION: Client disconnected: ('127.0.0.1', 51136)

@@ -1,0 +1,26 @@
+[
+    {
+        "file_id": "file123",
+        "sender_id": "clientA",
+        "recipient_id": "clientB",
+        "upload_time": "2026-05-19T10:00:00",
+        "expiration_time": "2026-05-25T10:00:00",
+        "status": "pending"
+    },
+    {
+        "file_id": "8998b9f5-cdac-4593-bd54-b57e4630a39e",
+        "sender_id": "clientA",
+        "recipient_id": "clientB",
+        "upload_time": "2026-05-19T10:00:00",
+        "expiration_time": "2026-05-25T10:00:00",
+        "status": "downloaded"
+    },
+    {
+        "file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f",
+        "sender_id": "clientA",
+        "recipient_id": "clientB",
+        "upload_time": "2026-05-19T10:00:00",
+        "expiration_time": "2026-05-25T10:00:00",
+        "status": "downloaded"
+    }
+]
