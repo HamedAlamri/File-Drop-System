@@ -1,34 +1,24 @@
 [
     {
-        "file_id": "file123",
-        "sender_id": "clientA",
-        "recipient_id": "clientB",
-        "upload_time": "2026-05-19T10:00:00",
-        "expiration_time": "2026-05-25T10:00:00",
-        "status": "pending"
-    },
-    {
-        "file_id": "8998b9f5-cdac-4593-bd54-b57e4630a39e",
-        "sender_id": "clientA",
-        "recipient_id": "clientB",
-        "upload_time": "2026-05-19T10:00:00",
-        "expiration_time": "2026-05-25T10:00:00",
-        "status": "downloaded"
-    },
-    {
-        "file_id": "32a16a21-9e3c-419e-a93d-031193d5fe7f",
-        "sender_id": "clientA",
-        "recipient_id": "clientB",
-        "upload_time": "2026-05-19T10:00:00",
-        "expiration_time": "2026-05-25T10:00:00",
-        "status": "downloaded"
-    },
-    {
-        "file_id": "de777b38-4073-4b70-a195-c0e6f9d82ba3",
-        "sender_id": "A",
-        "recipient_id": "B",
-        "upload_time": "2026-05-19T10:00:00",
-        "expiration_time": "2026-05-25T10:00:00",
-        "status": "downloaded"
+        "file_id": "FILE-20260521-192716",
+        "sender_id": "ali",
+        "recipient_id": "sara",
+        "upload_time": "2026-05-21T19:27:30.240385",
+        "expiration_time": "2026-05-21T20:27:30.240385",
+        "filename": "test2.txt",
+        "file_size": 41,
+        "status": "downloaded",
+        "wrapped_file_key": "ALuu9pwySR65p+0k5NmOhdwlm5tcazOTQ2sBUJ0XJXrLnTmYU2nVcIB/CZ14C4GVlHSbokGcfmeAwgTSgaMdxTsKB241tFiEMAda0tU97yZ7zvxQUtKJ4uAmxjA9MnNonSHG+rtfjMs2Uv3TcA0zjGE/g7vIlLQGlQ9QUuiu+g8eX9XQAxU60Ab3AxnjgZPtZKN3tEeTOd60GemenzxYP4dE/i293x5LjSQPU7zIZnHOGWhLTXg5+JV5NpetPSigRzHnr36FCNF4Jb0yExnFcYCIlfgMnVmOdLkREviCGXjKMiVTLXPmFopRNjnti4b5Zx9ofHWkir8Z8AhnkWKILQ==",
+        "sender_public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFvci84UDRhVnB2K0g5WDhlbFFnNgpyckZzTzdrenNYMW1pVEcvM1VNTVlpOUdRQTNLOGZSQVNRMURWL1pkMG56Z3RkUThJR2F1bFNKYlJOTEJZc3A2CjhyN1RsV0FnV2RLOHlIRmN6NzBqQzVDcXdSYXdVM3VMVlJ6M1VTOFZQZyttZ29HekwrSFFhM1lyUldyY2lwcEwKSW9CSEpjemY0N0lkQ2VqODA1WXR6TWU0Z283WFJRR081V0hRSHhoMWFZV04wWC9adkVqbUNHWFNPeERXblArUQp4cmc3SGNqOUowbGVMTzFrVUFJRjdBMjhJVi96WVZDVVRGS1lJWnQ4cnA5NXZDVW9tZHZVTHd3ZllmakVxRXArCnpQd1R1ak5yWWNvRkFxQ2YrbDZpTnYrekl4K3lXTjM2UzJmK285Z0F3ZDFjbXBUbWs5djRERFVBanE1RU1RWkgKL1FJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==",
+        "signature": "juX/C05eGG1tvZdJ8Zr3HqNKpCSpQcdwrN7OWJZKBcMwyFgVawBnBDuf1up1xbZD5esgEcNiRUuxj1um1AoBUClQ1KU1srByy+AJp7CHczs3HOkhCMnnd0ajMCpC1LI7+KiKaVe2d/pU3OnERa7ASUhTkA51qAEW0SWAkJxjl/CO4x29mVq6RuW7hRLkLoXff9BRhVlLI+2ZYLobj4EkgVxfeRzlt5Cji8uWXLZQm98fMrxnj5DRPsB2TXXXi/3QyKAgxdNVJGF5FAWVHgVhd+VYNnuxVQ72wXMCe7XXlgSJM+tT4wbAxKNTCNtBQqYgJuf/7khiugybc3hKXTcmFg==",
+        "sender_certificate": {
+            "subject": "ali",
+            "public_key": "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFvci84UDRhVnB2K0g5WDhlbFFnNgpyckZzTzdrenNYMW1pVEcvM1VNTVlpOUdRQTNLOGZSQVNRMURWL1pkMG56Z3RkUThJR2F1bFNKYlJOTEJZc3A2CjhyN1RsV0FnV2RLOHlIRmN6NzBqQzVDcXdSYXdVM3VMVlJ6M1VTOFZQZyttZ29HekwrSFFhM1lyUldyY2lwcEwKSW9CSEpjemY0N0lkQ2VqODA1WXR6TWU0Z283WFJRR081V0hRSHhoMWFZV04wWC9adkVqbUNHWFNPeERXblArUQp4cmc3SGNqOUowbGVMTzFrVUFJRjdBMjhJVi96WVZDVVRGS1lJWnQ4cnA5NXZDVW9tZHZVTHd3ZllmakVxRXArCnpQd1R1ak5yWWNvRkFxQ2YrbDZpTnYrekl4K3lXTjM2UzJmK285Z0F3ZDFjbXBUbWs5djRERFVBanE1RU1RWkgKL1FJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==",
+            "issuer": "SecureFileDropCA",
+            "valid_from": 1779369996.525406,
+            "valid_to": 1810905996.525406,
+            "signature": "kg6TLmw12oPr9D3B2ObBqqSThcX9q4tGZbwneUTGNAzGks1XzdsarG9huk9Yda9xc3NBSBIDDjZhWHHHZMfYRC85HyBJN4PCQMak8tFBlIN7vAM2+mXn0kBv/GuisFhu71AgyPteABFIz2ggCAFcbgBKQiyBSF0YW1PiVNbBC2czNcJqiEhKhyYLOeyVrkjLuiC/Ea/E73fdW5ZCvDjIBGH/vcNgCakxyP8j6OxyjRRvQkO6lAH4ft6Jxvv45XTfhLHpeYBWqWA1kG3dtQUDQeSXSZvykiF1K2TrYL5hOUGhgBVBIKItahIWz2CtYtddZqWAA/4Iz0A4y052DWs+Ug==",
+            "serial_number": 464246175156038402120878639906042969772351378240
+        }
     }
 ]

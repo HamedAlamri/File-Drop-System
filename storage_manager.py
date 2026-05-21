@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import datetime, timezone
 
 STORAGE_DIR = "storage"
 FILES_DIR = os.path.join(STORAGE_DIR, "files")
@@ -13,12 +14,27 @@ def init_storage():
         with open(METADATA_FILE, "w", encoding="utf-8") as f:
             json.dump([], f, indent=4)
 
+def list_all_metadata():
+    return load_metadata()
 
 def load_metadata():
     init_storage()
 
     with open(METADATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+
+    cleaned_data = []
+
+    for item in data:
+        if isinstance(item, dict):
+            cleaned_data.append(item)
+
+        elif isinstance(item, list):
+            for sub_item in item:
+                if isinstance(sub_item, dict):
+                    cleaned_data.append(sub_item)
+
+    return cleaned_data
 
 
 def save_all_metadata(data):
@@ -36,11 +52,35 @@ def save_metadata(record):
 
 def list_files_for_user(user_id):
     data = load_metadata()
+    updated = False
+
+    for item in data:
+        expiration_time = item.get("expiration_time")
+
+        if not expiration_time:
+            continue
+
+        try:
+            expiration = datetime.fromisoformat(expiration_time)
+
+            if expiration.tzinfo is None:
+                now = datetime.now()
+            else:
+                now = datetime.now(timezone.utc)
+
+        except ValueError:
+            continue
+
+        if now > expiration and item.get("status") == "pending":
+            item["status"] = "expired"
+            updated = True
+
+    if updated:
+        save_all_metadata(data)
 
     return [
         item for item in data
         if item.get("recipient_id") == user_id
-        and item.get("status") == "pending"
     ]
 
 
