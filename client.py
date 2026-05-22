@@ -5,6 +5,7 @@ import base64
 import os
 import uuid
 import sys
+import re
 
 from datetime import datetime, timedelta
 
@@ -70,6 +71,8 @@ def ensure_keys_dir():
 def generate_nonce():
     return base64.b64encode(os.urandom(16)).decode()
 
+def is_valid_user_id(user_id):
+    return re.match(r"^[A-Za-z0-9_]+$", user_id) is not None
 
 def get_private_key_path(user_id):
     return os.path.join(KEYS_DIR, f"{user_id}_private.pem")
@@ -362,6 +365,10 @@ def perform_handshake(user_id):
     client_certificate = ensure_certificate(user_id, client_public_key)
 
     client_nonce = generate_nonce()
+    client_signature = sign_message(
+        client_private_key,
+        client_nonce.encode()
+    )
     client_ecdh_private_key, client_ecdh_public_key = generate_ecdh_keypair()
 
     message = {
@@ -374,6 +381,7 @@ def perform_handshake(user_id):
             "client_id": user_id,
             "client_nonce": client_nonce,
             "client_certificate": certificate_to_json(client_certificate),
+            "client_signature": base64.b64encode(client_signature).decode(),
             "client_ecdh_public_key": base64.b64encode(
                 client_ecdh_public_key
             ).decode()
@@ -532,6 +540,10 @@ def main():
         if len(sys.argv) != 4:
             print("Usage: python client.py upload <sender_id> <recipient_id>")
             return
+        
+        if not is_valid_user_id(sys.argv[2]) or not is_valid_user_id(sys.argv[3]):
+            print("Invalid user ID. Use only letters, numbers, and underscore.")
+            return
 
         upload(sys.argv[2], sys.argv[3])
 
@@ -539,12 +551,20 @@ def main():
         if len(sys.argv) != 3:
             print("Usage: python client.py list <user_id>")
             return
+        
+        if not is_valid_user_id(sys.argv[2]):
+            print("Invalid user ID. Use only letters, numbers, and underscore.")
+            return
 
         list_files(sys.argv[2])
 
     elif command == "download":
         if len(sys.argv) != 4:
             print("Usage: python client.py download <file_id> <user_id>")
+            return
+        
+        if not is_valid_user_id(sys.argv[3]):
+            print("Invalid user ID. Use only letters, numbers, and underscore.")
             return
 
         download(sys.argv[2], sys.argv[3])
@@ -562,6 +582,10 @@ def main():
 
 def interactive_menu():
     user_id = input("Enter your user ID: ").strip()
+
+    if not is_valid_user_id(user_id):
+        print("Invalid user ID. Use only letters, numbers, and underscore.")
+        return
 
     if not user_id:
         print("User ID cannot be empty.")
@@ -583,6 +607,10 @@ def interactive_menu():
 
         if choice == "1":
             recipient_id = input("Enter recipient user ID: ").strip()
+
+            if not is_valid_user_id(recipient_id):
+                print("Invalid recipient ID. Use only letters, numbers, and underscore.")
+                continue
 
             if not recipient_id:
                 print("Recipient ID cannot be empty.")

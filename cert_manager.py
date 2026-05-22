@@ -97,8 +97,6 @@ def ensure_certificate(user_id, public_key_pem):
 
 
 def verify_certificate_json(cert_json):
-    import time
-
     try:
         required_fields = [
             "subject",
@@ -114,22 +112,9 @@ def verify_certificate_json(cert_json):
             if field not in cert_json:
                 return False
 
-        if cert_json["issuer"] != "SecureFileDropCA":
-            return False
+        certificate = certificate_from_json(cert_json)
 
-        now = time.time()
-
-        if now < cert_json["valid_from"]:
-            return False
-
-        if now > cert_json["valid_to"]:
-            return False
-
-        # Ensure base64 fields are decodable
-        b64_to_bytes(cert_json["public_key"])
-        b64_to_bytes(cert_json["signature"])
-
-        return True
+        return CA.verify_certificate(certificate)
 
     except Exception:
         return False

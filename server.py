@@ -150,7 +150,14 @@ def build_signature_data(
     return json.dumps(data, sort_keys=True).encode()
 
 def load_server_private_key():
-    with open("keys/server_private.pem", "rb") as f:
+    key_path = "keys/server_private.pem"
+
+    if not os.path.exists(key_path):
+        raise FileNotFoundError(
+            "Server private key not found. Run: python client.py setup-server"
+        )
+
+    with open(key_path, "rb") as f:
         return f.read()
 
 def short_file_id(file_id):
@@ -199,6 +206,7 @@ def log_safe_message(message, addr):
 def handle_client(conn, addr):
     print_server_event("CONNECT", f"{addr}")
     log_event("CONNECTION", f"Client connected: {addr}")
+    authenticated_user = None
 
     try:
         while True:
@@ -285,7 +293,44 @@ def handle_client(conn, addr):
                 print(f"[CLIENT CERTIFICATE] Valid certificate for {client_id}")
                 log_event("CLIENT_CERTIFICATE_OK", f"Valid certificate for {client_id}")
 
+                client_signature_b64 = message["payload"].get("client_signature")
+
+                if client_signature_b64 is None:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Missing client proof-of-possession signature",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event("CLIENT_PROOF_FAILED", f"Missing proof-of-possession from {client_id}")
+                    continue
+
+                client_public_key = base64.b64decode(client_certificate["public_key"])
+                client_signature = base64.b64decode(client_signature_b64)
                 client_nonce = message["payload"]["client_nonce"]
+
+                if not verify_signature(
+                    client_public_key,
+                    client_nonce.encode(),
+                    client_signature
+                ):
+                    send_json(
+                        conn,
+                        create_error(
+                            "Invalid client proof-of-possession signature",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event("CLIENT_PROOF_FAILED", f"Invalid proof-of-possession from {client_id}")
+                    continue
+
+                print(f"[CLIENT PROOF] {client_id} owns the private key")
+                log_event("CLIENT_PROOF_OK", f"{client_id} proved private key possession")
+                authenticated_user = client_id
+
                 client_ecdh_public_key = message["payload"]["client_ecdh_public_key"]
 
                 response = create_server_hello(
@@ -300,6 +345,21 @@ def handle_client(conn, addr):
 
             elif msg_type == LIST_REQUEST:
                 user_id = message["payload"]["user_id"]
+                if authenticated_user != user_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Authenticated user does not match requested user",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "AUTHORIZATION_FAILED",
+                        f"authenticated_user={authenticated_user} tried LIST as user_id={user_id}"
+                    )
+                    continue
+
                 files = list_files_for_user(user_id)
 
                 response = {
@@ -323,6 +383,21 @@ def handle_client(conn, addr):
 
                 file_id = payload["file_id"]
                 sender_id = payload["sender_id"]
+                if authenticated_user != sender_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Authenticated user does not match sender",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "AUTHORIZATION_FAILED",
+                        f"authenticated_user={authenticated_user} tried UPLOAD as sender_id={sender_id}"
+                    )
+                    continue
+
                 recipient_id = payload["recipient_id"]
                 encrypted_file = payload["encrypted_file"]
                 wrapped_file_key = payload["wrapped_file_key"]
@@ -454,6 +529,20 @@ def handle_client(conn, addr):
 
                 file_id = payload["file_id"]
                 user_id = payload["user_id"]
+                if authenticated_user != user_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Authenticated user does not match download user",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "AUTHORIZATION_FAILED",
+                        f"authenticated_user={authenticated_user} tried DOWNLOAD as user_id={user_id}"
+                    )
+                    continue
 
                 metadata = get_file_metadata(file_id)
 
