@@ -229,6 +229,22 @@ def verify_download_signature(payload):
         print("\n[SIGNATURE CHECK]")
         print("Invalid sender signature ❌")
 
+def revoke_file(file_id, user_id):
+    perform_handshake(user_id)
+
+    message = {
+        "type": "REVOKE_REQUEST",
+        "session_id": "test-session",
+        "seq": 8,
+        "timestamp": int(time.time()),
+        "nonce": generate_nonce(),
+        "payload": {
+            "file_id": file_id,
+            "user_id": user_id
+        }
+    }
+
+    send_message(message)
 
 def send_message(message, client_ecdh_private_key=None, keep_open=False):
     use_existing_session = SESSION["active"] and SESSION["socket"] is not None
@@ -252,6 +268,9 @@ def send_message(message, client_ecdh_private_key=None, keep_open=False):
             print("[SERVER CERTIFICATE] Valid ✅")
         else:
             print("[SERVER CERTIFICATE] Invalid ❌")
+            client.close()
+            SESSION["active"] = False
+            raise Exception("Server authentication failed: invalid server certificate")
 
         server_signature_b64 = decoded_response["payload"].get("server_signature")
 
@@ -268,6 +287,9 @@ def send_message(message, client_ecdh_private_key=None, keep_open=False):
                 print("[SERVER PROOF] Valid ✅")
             else:
                 print("[SERVER PROOF] Invalid ❌")
+                client.close()
+                SESSION["active"] = False
+                raise Exception("Server authentication failed: invalid server proof")
 
         server_ecdh_public_key_b64 = decoded_response["payload"].get(
             "server_ecdh_public_key"
@@ -292,6 +314,10 @@ def send_message(message, client_ecdh_private_key=None, keep_open=False):
 
     elif decoded_response.get("type") == "UPLOAD_ACK":
         print("[UPLOAD] File uploaded successfully ✅")
+        print(f"File ID: {decoded_response['payload']['file_id']}")
+
+    elif decoded_response.get("type") == "REVOKE_ACK":
+        print("[REVOKE] File revoked successfully ✅")
         print(f"File ID: {decoded_response['payload']['file_id']}")
 
     elif decoded_response.get("type") == "LIST_RESPONSE":
@@ -581,6 +607,11 @@ def main():
 
 
 def interactive_menu():
+    print()
+    print("-------------------------------------------------------------")
+    print("======\\ Welcome to Secure Zero-Trust File Drop System /======")
+    print("-------------------------------------------------------------")
+    print()
     user_id = input("Enter your user ID: ").strip()
 
     if not is_valid_user_id(user_id):
@@ -597,12 +628,13 @@ def interactive_menu():
     perform_handshake(user_id)
 
     while True:
-        print("\n===== Secure File Drop Menu =====")
+        print("\n===== Secure Zero-Trust File Drop System Menu =====")
         print("1. Upload file")
         print("2. List my files")
         print("3. Download file")
-        print("4. Exit")
-
+        print("4. Revoke uploaded file")
+        print("5. Exit")
+        print()
         choice = input("Choose an option: ").strip()
 
         if choice == "1":
@@ -637,12 +669,21 @@ def interactive_menu():
             download(file_id, user_id)
 
         elif choice == "4":
+            file_id = input("Enter file ID to revoke: ").strip()
+
+            if not file_id:
+                print("File ID cannot be empty.")
+                continue
+
+            revoke_file(file_id, user_id)
+
+        elif choice == "5":
             close_session()
-            print("Exiting Secure File Drop.")
+            print("Exiting Secure Zero-Trust File Drop System...")
             break
 
         else:
-            print("Invalid option. Please choose 1, 2, 3, or 4.")
+            print("Invalid option. Please choose 1, 2, 3, 4, or 5.")
 
 def close_session():
     if SESSION["socket"] is not None:

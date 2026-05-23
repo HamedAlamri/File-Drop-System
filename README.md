@@ -133,6 +133,7 @@ Server authentication:
 - verifies the server proof signature.
 
 This prevents unauthorized entities from impersonating trusted participants.
+* Proof-of-possession is implemented by signing fresh handshake nonces using the participant private key.
 
 ---
 
@@ -177,6 +178,8 @@ The server sends:
 The client:
 - verifies server certificate
 - verifies server proof signature
+
+If server authentication fails, the client immediately terminates the connection and refuses to continue the session.
 
 ---
 
@@ -233,6 +236,8 @@ A custom application-layer protocol was designed and implemented.
 | LIST_RESPONSE | Return pending files |
 | DOWNLOAD_REQUEST | Retrieve encrypted package |
 | DOWNLOAD_RESPONSE | Send encrypted package |
+| REVOKE_REQUEST | Revoke uploaded file before retrieval |
+| REVOKE_ACK | Revocation success confirmation |
 | ERROR | Error reporting |
 
 ---
@@ -366,6 +371,8 @@ Example:
 
 The system implements server-enforced one-time downloads.
 
+The server updates the file state only after a successful DOWNLOAD_RESPONSE is delivered to the authenticated recipient.
+
 A file transitions:
 
 ```text
@@ -385,6 +392,42 @@ Example:
 ```
 
 Interrupted or failed downloads do not consume the file automatically.
+
+---
+
+# Revocation Before Download (Bonus Feature)
+
+The system implements server-enforced file revocation before successful retrieval.
+
+The sender may revoke an uploaded file only if:
+- the file has not been downloaded yet,
+- the requester is the original sender,
+- the file still exists in pending state.
+
+Revocation is enforced by the server and not by the client interface.
+
+When a file is revoked:
+- the server changes the file state to revoked,
+- future download attempts are rejected,
+- revocation events are logged.
+
+Example successful revocation:
+
+```json
+{
+  "message": "File revoked successfully"
+}
+```
+
+Example retrieval rejection after revocation:
+
+```json
+{
+  "error": "File has been revoked by sender"
+}
+```
+
+The server checks revocation status before every retrieval request.
 
 ---
 
@@ -417,6 +460,8 @@ Logged events include:
 - handshake events
 - uploads
 - downloads
+- file revocation events
+- revoked-file retrieval attempts
 - replay detections
 - unauthorized access attempts
 - expiration rejections
@@ -427,6 +472,8 @@ Sensitive data is NOT logged:
 - private keys
 - AES keys
 - decrypted content
+
+Logs include timestamps, client identities, file identifiers, and security event types.
 
 ---
 
@@ -493,6 +540,7 @@ A dedicated `demo_tests.py` test suite was implemented.
 | Unauthorized Download | PASS |
 | One-Time Download | PASS |
 | Expired File Rejection | PASS |
+| Revoked File Rejection | PASS |
 
 These tests demonstrate that security mechanisms are actually enforced by the system and not merely printed messages.
 
@@ -633,6 +681,8 @@ The system successfully demonstrates:
 - Digital signatures
 - Secure retrieval
 - Unauthorized access rejection
+- File revocation before download
+- Revoked file rejection
 - Expiration enforcement
 - Replay protection
 - Security-aware logging

@@ -398,6 +398,67 @@ def test_expired_file():
     sock_receiver.close()
     pass_fail(ok)
 
+def revoke_request(sock, file_id, user_id):
+    message = {
+        "type": "REVOKE_REQUEST",
+        "session_id": "demo-session",
+        "seq": 7,
+        "timestamp": int(time.time()),
+        "nonce": generate_nonce(),
+        "payload": {
+            "file_id": file_id,
+            "user_id": user_id
+        }
+    }
+
+    return send_recv(sock, message)
+
+
+def test_revoked_file():
+    print("\n=== Test 9: Revoked File Rejection ===")
+
+    sock_sender, _ = open_handshake("RevokeSender")
+
+    package = make_file_package(
+        "RevokeSender",
+        "RevokeReceiver",
+        b"This file will be revoked.",
+        "revoked.txt"
+    )
+
+    upload_response = upload_package(sock_sender, package)
+    print("\nUpload response:")
+    print_response(upload_response)
+
+    revoke_response = revoke_request(
+        sock_sender,
+        package["file_id"],
+        "RevokeSender"
+    )
+
+    print("\nRevoke response:")
+    print_response(revoke_response)
+
+    sock_sender.close()
+
+    sock_receiver, _ = open_handshake("RevokeReceiver")
+
+    response = download_request(
+        sock_receiver,
+        package["file_id"],
+        "RevokeReceiver"
+    )
+
+    print("\nDownload after revoke:")
+    print_response(response)
+
+    ok = (
+        response.get("type") == "ERROR"
+        and "revoked" in response.get("payload", {}).get("error", "").lower()
+    )
+
+    sock_receiver.close()
+    pass_fail(ok)
 
 def run_all():
     test_valid_handshake()
@@ -408,6 +469,7 @@ def run_all():
     test_unauthorized_download()
     test_one_time_download()
     test_expired_file()
+    test_revoked_file()
 
 
 def menu():
@@ -421,9 +483,10 @@ def menu():
         print("6. Unauthorized download")
         print("7. One-time download")
         print("8. Expired file")
-        print("9. Run all tests")
+        print("9. Revoked file")
+        print("10. Run all tests")
         print("0. Exit")
-
+        print()
         choice = input("Choose test: ").strip()
 
         if choice == "1":
@@ -443,8 +506,13 @@ def menu():
         elif choice == "8":
             test_expired_file()
         elif choice == "9":
+            test_revoked_file()
+        elif choice == "10":
             run_all()
+            exit()
+            print()
         elif choice == "0":
+            print("Exiting security demo tests...")
             break
         else:
             print("Invalid choice.")

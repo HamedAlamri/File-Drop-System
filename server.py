@@ -27,6 +27,8 @@ from protocol import (
     LIST_RESPONSE,
     DOWNLOAD_REQUEST,
     DOWNLOAD_RESPONSE,
+    REVOKE_REQUEST,
+    REVOKE_ACK,
     ERROR
 )
 
@@ -196,6 +198,13 @@ def log_safe_message(message, addr):
     elif msg_type == DOWNLOAD_REQUEST:
         print_server_event(
             "DOWNLOAD_REQUEST",
+            f"file={short_file_id(payload.get('file_id'))} "
+            f"user={payload.get('user_id')}"
+        )
+    
+    elif msg_type == REVOKE_REQUEST:
+        print_server_event(
+            "REVOKE_REQUEST",
             f"file={short_file_id(payload.get('file_id'))} "
             f"user={payload.get('user_id')}"
         )
@@ -524,6 +533,117 @@ def handle_client(conn, addr):
                     f"{sender_id} uploaded {file_id} for {recipient_id}"
                 )
 
+            elif msg_type == REVOKE_REQUEST:
+                payload = message["payload"]
+
+                file_id = payload["file_id"]
+                user_id = payload["user_id"]
+
+                if authenticated_user != user_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Authenticated user does not match revoke user",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "AUTHORIZATION_FAILED",
+                        f"authenticated_user={authenticated_user} tried REVOKE as user_id={user_id}"
+                    )
+                    continue
+
+                metadata = get_file_metadata(file_id)
+
+                if metadata is None:
+                    send_json(
+                        conn,
+                        create_error(
+                            "File not found",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "REVOKE_FAILED",
+                        f"{user_id} tried to revoke missing file {file_id}"
+                    )
+                    continue
+
+                if metadata["sender_id"] != user_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Only the sender can revoke this file",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "UNAUTHORIZED_REVOKE",
+                        f"{user_id} tried to revoke {file_id}"
+                    )
+                    continue
+
+                if metadata["status"] == "downloaded":
+                    send_json(
+                        conn,
+                        create_error(
+                            "Cannot revoke file after it has been downloaded",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "REVOKE_FAILED",
+                        f"{user_id} tried to revoke already downloaded file {file_id}"
+                    )
+                    continue
+
+                if metadata["status"] == "revoked":
+                    send_json(
+                        conn,
+                        create_error(
+                            "File already revoked",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "REVOKE_FAILED",
+                        f"{user_id} tried to revoke already revoked file {file_id}"
+                    )
+                    continue
+
+                update_file_status(file_id, "revoked")
+
+                response = {
+                    "type": REVOKE_ACK,
+                    "session_id": message.get("session_id"),
+                    "seq": message.get("seq", 0) + 1,
+                    "timestamp": int(time.time()),
+                    "nonce": generate_nonce(),
+                    "payload": {
+                        "message": "File revoked successfully",
+                        "file_id": file_id
+                    }
+                }
+
+                send_json(conn, response)
+
+                print(
+                    f"[REVOKED] "
+                    f"file={file_id[:8]}... "
+                    f"by={user_id}"
+                )
+
+                log_event(
+                    "REVOKE",
+                    f"{user_id} revoked {file_id}"
+                )
+
+
             elif msg_type == DOWNLOAD_REQUEST:
                 payload = message["payload"]
 
@@ -600,6 +720,27 @@ def handle_client(conn, addr):
                         f"file={file_id[:8]}... "
                         f"user={user_id} "
                         f"reason=already_downloaded"
+                    )
+                    continue
+
+                if metadata["status"] == "revoked":
+                    send_json(
+                        conn,
+                        create_error(
+                            "File has been revoked by sender",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "REVOKED_FILE_ACCESS",
+                        f"{user_id} tried to download revoked file {file_id}"
+                    )
+                    print(
+                        f"[DOWNLOAD_REJECTED] "
+                        f"file={file_id[:8]}... "
+                        f"user={user_id} "
+                        f"reason=revoked"
                     )
                     continue
 
