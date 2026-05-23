@@ -469,11 +469,8 @@ This setup step will:
 Expected output example:
 
 ```text
-[SETUP] CA initialized
-[SETUP] Server keys generated
-[SETUP] Server certificate issued
-[SETUP] Storage folders created
-[SETUP] Setup completed successfully
+[KEYGEN] Generated RSA keys for server
+[SETUP] Server keys and certificate created
 ```
 
 ---
@@ -573,7 +570,10 @@ File-Drop-System/
 ├── ca.py
 ├── crypto_utils.py
 ├── protocol.py
-├── emo_tests.py
+├── demo_tests.py
+├── cert_manager.py
+├── storage_manager.py
+├── logger.py
 │
 ├── certs/
 ├── keys/
