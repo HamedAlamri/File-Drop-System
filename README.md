@@ -118,6 +118,22 @@ Each certificate contains:
 
 The client and server establish a secure authenticated session before any sensitive operation.
 
+# Mutual Authentication
+
+The system enforces mutual authentication.
+
+Client authentication:
+- the server verifies the client certificate,
+- verifies the CA signature,
+- verifies proof-of-possession of the private key.
+
+Server authentication:
+- the client verifies the server certificate,
+- verifies the CA signature,
+- verifies the server proof signature.
+
+This prevents unauthorized entities from impersonating trusted participants.
+
 ---
 
 # Handshake Steps
@@ -436,7 +452,7 @@ Before running the system for the first time, initialize the Certificate Authori
 Run:
 
 ```bash
-python setup.py
+python client.py setup-server
 ```
 
 This setup step will:
@@ -464,7 +480,7 @@ Expected output example:
 
 # Security Demonstration Tests
 
-A dedicated `security_demo.py` test suite was implemented.
+A dedicated `demo_tests.py` test suite was implemented.
 
 ---
 
@@ -554,11 +570,10 @@ File-Drop-System/
 │
 ├── client.py
 ├── server.py
-├── setup.py
 ├── ca.py
 ├── crypto_utils.py
 ├── protocol.py
-├── security_demo.py
+├── emo_tests.py
 │
 ├── certs/
 ├── keys/
