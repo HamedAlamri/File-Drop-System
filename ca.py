@@ -1,15 +1,19 @@
+# modules
 import os
 import time
 import uuid
 import json
-
 from crypto_utils import generate_rsa_keypair, sign_message, verify_signature
 
+
+# ca_store --> folder, which we store our ca key on it.
 CA_DIR = "ca_store"
+# create files inside our ca_store folder  
 CA_PRIVATE_KEY_FILE = os.path.join(CA_DIR, "ca_private.pem")
 CA_PUBLIC_KEY_FILE = os.path.join(CA_DIR, "ca_public.pem")
 
 
+# this fucntion is ensure that the ca director is exitst, if not create one
 def ensure_ca_dir():
     os.makedirs(CA_DIR, exist_ok=True)
 
@@ -31,6 +35,7 @@ class CertificateAuthority:
     def __init__(self):
         ensure_ca_dir()
 
+        #  we write and read the private and public keyies
         if not os.path.exists(CA_PRIVATE_KEY_FILE) or not os.path.exists(CA_PUBLIC_KEY_FILE):
             private_key, public_key = generate_rsa_keypair()
 
@@ -46,12 +51,14 @@ class CertificateAuthority:
         with open(CA_PUBLIC_KEY_FILE, "rb") as f:
             self.public_key = f.read()
 
+    # create certificate
     def issue_certificate(self, subject_name, subject_public_key_pem, validity_days=365):
-        valid_from = time.time()
-        valid_to = valid_from + validity_days * 24 * 60 * 60
+        valid_from = time.time() # now 
+        valid_to = valid_from + validity_days * 24 * 60 * 60  # time by seconds 
         serial_number = str(uuid.uuid4())
         issuer = "SecureFileDropCA"
 
+        # creat the certificate structure
         certificate_data = build_certificate_data(
             subject_name,
             subject_public_key_pem,
@@ -61,8 +68,10 @@ class CertificateAuthority:
             serial_number
         )
 
+        # private key + certificate data = signature
         signature = sign_message(self.private_key, certificate_data)
 
+        # return the certificate
         return {
             "subject": subject_name,
             "public_key": subject_public_key_pem,
@@ -73,16 +82,20 @@ class CertificateAuthority:
             "signature": signature
         }
 
+    # check if the certificate is valid
     def verify_certificate(self, certificate):
         try:
             now = time.time()
 
+            # check the issure
             if certificate["issuer"] != "SecureFileDropCA":
                 return False
 
+            # check the if the time is valid
             if now < certificate["valid_from"] or now > certificate["valid_to"]:
                 return False
 
+            # bulid new certificate, for checking
             certificate_data = build_certificate_data(
                 certificate["subject"],
                 certificate["public_key"],
@@ -91,15 +104,22 @@ class CertificateAuthority:
                 certificate["valid_to"],
                 certificate["serial_number"]
             )
-
+            
+            # this will return true/false 
+            # it give us the final result
             return verify_signature(
                 self.public_key,
                 certificate_data,
                 certificate["signature"]
             )
 
+        # if any error happend than raise an error
         except Exception:
             return False
 
+    
+    # this for returing the publick_key
+    ### we may do not need it
     def get_ca_public_key(self):
         return self.public_key
+    ####
