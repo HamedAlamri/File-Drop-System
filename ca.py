@@ -57,7 +57,7 @@ class CertificateAuthority:
             
 
     # create certificate
-    def issure_certificate(self, subject_name, subject_public_key_pem, validity_days=365):
+    def issue_certificate(self, subject_name, subject_public_key_pem, validity_days=365):
         valid_from = time.time() # now time
         valid_to = valid_from + (validity_days * 24 * 60 * 60) # by seconds
         serial_number = str(uuid.uuid4()) # get unique number
