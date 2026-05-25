@@ -1,3 +1,7 @@
+"""
+This file is for Certificate Authority (CA) for our program
+"""
+
 # Modules
 import os
 import time

@@ -1,3 +1,8 @@
+"""
+This file is contain our variables
+We use them in (server.py)
+"""
+
 # we use these variables in server.py
 CLIENT_HELLO = "CLIENT_HELLO"
 SERVER_HELLO = "SERVER_HELLO"
