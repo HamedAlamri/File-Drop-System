@@ -25,7 +25,7 @@ The server is responsible for:
 
 while never learning plaintext file contents.
 
-The system was implemented using Python sockets and custom cryptographic protocol logic without using TLS or ready-made secure channel frameworks, as required by the assignment.
+The system was implemented using Python sockets and custom cryptographic protocol logic without using TLS or ready-made secure channel frameworks, as required by the assignment, An optional graphical user interface (GUI) was also implemented for easier demonstration and interaction with the secure file system.
 
 ---
 
@@ -118,7 +118,7 @@ Each certificate contains:
 
 The client and server establish a secure authenticated session before any sensitive operation.
 
-# Mutual Authentication
+## Mutual Authentication
 
 The system enforces mutual authentication.
 
@@ -662,6 +662,15 @@ Countermeasure:
 
 ---
 
+### 6. No Transport-Layer Encryption
+
+The current implementation establishes authenticated session keys using ECDH and HKDF, but application payloads exchanged after the handshake are not yet encrypted using those derived session keys.
+
+Countermeasure:
+- apply authenticated encryption to all post-handshake protocol messages using AES-GCM session encryption.
+
+---
+
 # Project Structure
 
 ```text
@@ -673,6 +682,7 @@ File-Drop-System/
 ├── crypto_utils.py
 ├── protocol.py
 ├── demo_tests.py
+├── gui_client.py
 ├── cert_manager.py
 ├── storage_manager.py
 ├── logger.py
@@ -722,6 +732,53 @@ python demo_tests.py
 
 ---
 
+# Optional GUI Client
+
+The project also includes an optional graphical user interface for easier demonstration and usability.
+
+Before running the GUI, make sure the server is already running:
+
+```bash
+python server.py
+```
+
+Then run:
+
+```bash
+python gui_client.py
+```
+
+If `customtkinter` is not installed, install it using:
+
+```bash
+pip install customtkinter
+```
+
+The GUI supports:
+- starting a secure authenticated session,
+- encrypted file upload,
+- expiration-time entry from the interface,
+- visual file listing using card-style views,
+- automatic refresh when switching tabs,
+- selecting files for download without manually typing the file ID,
+- selecting uploaded files for revocation,
+- displaying file status in the interface.
+
+The GUI is only an additional usability layer.
+
+All security decisions are still enforced by the server and the core protocol, including:
+- certificate-based authentication,
+- access control,
+- file encryption,
+- signature verification,
+- replay protection,
+- expiration checks,
+- revocation enforcement,
+- one-time download enforcement,
+- signed recipient acknowledgement verification.
+
+---
+
 # Demonstration Checklist
 
 The system successfully demonstrates:
@@ -742,6 +799,7 @@ The system successfully demonstrates:
 - Expiration enforcement
 - Replay protection
 - Security-aware logging
+- Optional GUI client for easier demonstration
 
 This matches the assignment requirements.
 
