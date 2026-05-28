@@ -20,7 +20,6 @@ def log_event(event_type, message):
     with open(EVENT_LOG_FILE, "a", encoding="utf-8") as f:
         f.write(f"[{timestamp}] {event_type}: {message}\n")
 
-
 def log_admin_debug(event_type, message):
     if not DEBUG_MODE:
         return

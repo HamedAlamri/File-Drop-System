@@ -36,19 +36,16 @@ def load_metadata():
 
     return cleaned_data
 
-
 def save_all_metadata(data):
     init_storage()
 
     with open(METADATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-
 def save_metadata(record):
     data = load_metadata()
     data.append(record)
     save_all_metadata(data)
-
 
 def list_files_for_user(user_id):
     data = load_metadata()
