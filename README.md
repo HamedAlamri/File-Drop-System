@@ -236,6 +236,8 @@ A custom application-layer protocol was designed and implemented.
 | LIST_RESPONSE | Return pending files |
 | DOWNLOAD_REQUEST | Retrieve encrypted package |
 | DOWNLOAD_RESPONSE | Send encrypted package |
+| DOWNLOAD_ACK | Signed recipient acknowledgement |
+| DOWNLOAD_ACK_RESPONSE | ACK verification response |
 | REVOKE_REQUEST | Revoke uploaded file before retrieval |
 | REVOKE_ACK | Revocation success confirmation |
 | ERROR | Error reporting |
@@ -298,7 +300,7 @@ The server stores:
 | upload_time | upload timestamp |
 | expiration_time | expiration enforcement |
 | filename | file reference |
-| status | pending/downloaded |
+| status | pending/downloaded/revoked/expired |
 | wrapped_file_key | recipient encrypted AES key |
 
 ---
@@ -391,7 +393,7 @@ Example:
 }
 ```
 
-Interrupted or failed downloads do not consume the file automatically.
+Interrupted or failed downloads do not consume the file automatically, the server tracks file retrieval state transitions securely and rejects repeated retrieval attempts after successful delivery.
 
 ---
 
@@ -431,6 +433,56 @@ The server checks revocation status before every retrieval request.
 
 ---
 
+# Signed Recipient Acknowledgement (Bonus Feature)
+
+The system implements signed recipient acknowledgements after successful retrieval and verification.
+
+After downloading and decrypting the file:
+
+1. The recipient verifies the sender digital signature
+2. The recipient generates a signed acknowledgement
+3. The acknowledgement is cryptographically bound to:
+
+   * file ID
+   * recipient ID
+   * acknowledgement timestamp
+   * verification status
+4. The acknowledgement is signed using the recipient private key
+5. The server verifies the acknowledgement signature
+
+The acknowledgement is generated only after successful verification of the downloaded package.
+
+This mechanism allows:
+
+* proof of successful delivery,
+* proof of recipient verification,
+* cryptographic confirmation of receipt.
+
+Example acknowledgement message:
+
+```json
+{
+  "type": "DOWNLOAD_ACK",
+  "payload": {
+    "file_id": "FILE-123",
+    "recipient_id": "Bob",
+    "status": "verified"
+  }
+}
+```
+
+Example successful acknowledgement verification:
+
+```json
+{
+  "message": "Signed acknowledgement verified"
+}
+```
+
+Acknowledgement events are logged by the server.
+
+---
+
 # File Expiration
 
 Each uploaded file contains an expiration timestamp.
@@ -466,6 +518,7 @@ Logged events include:
 - unauthorized access attempts
 - expiration rejections
 - signature failures
+- signed acknowledgement verification
 
 Sensitive data is NOT logged:
 - plaintext files
@@ -541,6 +594,7 @@ A dedicated `demo_tests.py` test suite was implemented.
 | One-Time Download | PASS |
 | Expired File Rejection | PASS |
 | Revoked File Rejection | PASS |
+| Signed Recipient Acknowledgement | PASS |
 
 These tests demonstrate that security mechanisms are actually enforced by the system and not merely printed messages.
 
@@ -683,6 +737,8 @@ The system successfully demonstrates:
 - Unauthorized access rejection
 - File revocation before download
 - Revoked file rejection
+- Signed recipient acknowledgement
+- ACK signature verification
 - Expiration enforcement
 - Replay protection
 - Security-aware logging
@@ -713,6 +769,7 @@ The system provides:
 - integrity verification,
 - replay protection,
 - access control,
+- signed recipient acknowledgement,
 - expiration enforcement,
 - security-aware logging,
 

@@ -141,6 +141,50 @@ def build_signature_data(
 
     return json.dumps(data, sort_keys=True).encode()
 
+def build_ack_data(file_id, recipient_id, status, timestamp):
+    data = {
+        "file_id": file_id,
+        "recipient_id": recipient_id,
+        "status": status,
+        "timestamp": timestamp
+    }
+
+    return json.dumps(data, sort_keys=True).encode()
+
+def send_download_ack(file_id, recipient_id):
+    recipient_private_key = load_private_key(recipient_id)
+
+    timestamp = int(time.time())
+    status = "verified"
+
+    ack_data = build_ack_data(
+        file_id,
+        recipient_id,
+        status,
+        timestamp
+    )
+
+    ack_signature = sign_message(
+        recipient_private_key,
+        ack_data
+    )
+
+    message = {
+        "type": "DOWNLOAD_ACK",
+        "session_id": "test-session",
+        "seq": 9,
+        "timestamp": int(time.time()),
+        "nonce": generate_nonce(),
+        "payload": {
+            "file_id": file_id,
+            "recipient_id": recipient_id,
+            "status": status,
+            "ack_timestamp": timestamp,
+            "ack_signature": base64.b64encode(ack_signature).decode()
+        }
+    }
+
+    send_message(message)
 
 def encrypt_file_for_recipient(file_bytes, recipient_id):
     file_key = os.urandom(32)
@@ -161,6 +205,7 @@ def encrypt_file_for_recipient(file_bytes, recipient_id):
         "encrypted_file": base64.b64encode(encrypted_file).decode(),
         "wrapped_file_key": base64.b64encode(wrapped_file_key).decode()
     }
+
 
 
 def decrypt_downloaded_file(payload, user_id):
@@ -193,7 +238,10 @@ def decrypt_downloaded_file(payload, user_id):
         print("File decrypted successfully ✅")
         print(f"Saved to: {output_path}")
 
-        verify_download_signature(payload)
+        signature_ok = verify_download_signature(payload)
+
+        if signature_ok:
+            send_download_ack(metadata["file_id"], user_id)
 
     except Exception as e:
         print("\n[DECRYPTION FAILED]")
@@ -208,7 +256,7 @@ def verify_download_signature(payload):
 
     if not sender_public_key_b64 or not signature_b64:
         print("\n[SIGNATURE CHECK] Missing signature or sender public key")
-        return
+        return False
 
     sender_public_key = base64.b64decode(sender_public_key_b64)
     signature = base64.b64decode(signature_b64)
@@ -225,9 +273,11 @@ def verify_download_signature(payload):
     if verify_signature(sender_public_key, signature_data, signature):
         print("\n[SIGNATURE CHECK]")
         print("Valid sender signature ✅")
+        return True
     else:
         print("\n[SIGNATURE CHECK]")
         print("Invalid sender signature ❌")
+        return False
 
 def revoke_file(file_id, user_id):
     perform_handshake(user_id)
@@ -245,6 +295,7 @@ def revoke_file(file_id, user_id):
     }
 
     send_message(message)
+
 
 def send_message(message, client_ecdh_private_key=None, keep_open=False):
     use_existing_session = SESSION["active"] and SESSION["socket"] is not None
@@ -319,6 +370,9 @@ def send_message(message, client_ecdh_private_key=None, keep_open=False):
     elif decoded_response.get("type") == "REVOKE_ACK":
         print("[REVOKE] File revoked successfully ✅")
         print(f"File ID: {decoded_response['payload']['file_id']}")
+
+    elif decoded_response.get("type") == "DOWNLOAD_ACK_RESPONSE":
+        print("[ACK] Signed download acknowledgement accepted ✅")
 
     elif decoded_response.get("type") == "LIST_RESPONSE":
         files = decoded_response["payload"]["files"]

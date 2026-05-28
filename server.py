@@ -27,6 +27,8 @@ from protocol import (
     LIST_RESPONSE,
     DOWNLOAD_REQUEST,
     DOWNLOAD_RESPONSE,
+    DOWNLOAD_ACK,
+    DOWNLOAD_ACK_RESPONSE,
     REVOKE_REQUEST,
     REVOKE_ACK,
     ERROR
@@ -151,6 +153,16 @@ def build_signature_data(
 
     return json.dumps(data, sort_keys=True).encode()
 
+def build_ack_data(file_id, recipient_id, status, timestamp):
+    data = {
+        "file_id": file_id,
+        "recipient_id": recipient_id,
+        "status": status,
+        "timestamp": timestamp
+    }
+
+    return json.dumps(data, sort_keys=True).encode()
+
 def load_server_private_key():
     key_path = "keys/server_private.pem"
 
@@ -202,6 +214,13 @@ def log_safe_message(message, addr):
             f"user={payload.get('user_id')}"
         )
     
+    elif msg_type == DOWNLOAD_ACK:
+        print_server_event(
+            "DOWNLOAD_ACK",
+            f"file={short_file_id(payload.get('file_id'))} "
+            f"recipient={payload.get('recipient_id')}"
+        )
+
     elif msg_type == REVOKE_REQUEST:
         print_server_event(
             "REVOKE_REQUEST",
@@ -216,6 +235,7 @@ def handle_client(conn, addr):
     print_server_event("CONNECT", f"{addr}")
     log_event("CONNECTION", f"Client connected: {addr}")
     authenticated_user = None
+    authenticated_public_key = None
 
     try:
         while True:
@@ -339,6 +359,7 @@ def handle_client(conn, addr):
                 print(f"[CLIENT PROOF] {client_id} owns the private key")
                 log_event("CLIENT_PROOF_OK", f"{client_id} proved private key possession")
                 authenticated_user = client_id
+                authenticated_public_key = client_public_key
 
                 client_ecdh_public_key = message["payload"]["client_ecdh_public_key"]
 
@@ -643,6 +664,142 @@ def handle_client(conn, addr):
                     f"{user_id} revoked {file_id}"
                 )
 
+            elif msg_type == DOWNLOAD_ACK:
+                payload = message["payload"]
+
+                file_id = payload["file_id"]
+                recipient_id = payload["recipient_id"]
+                status = payload["status"]
+                ack_timestamp = payload["ack_timestamp"]
+                ack_signature_b64 = payload["ack_signature"]
+
+                if authenticated_user != recipient_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Authenticated user does not match acknowledgement recipient",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_FAILED",
+                        f"authenticated_user={authenticated_user} tried ACK as recipient_id={recipient_id}"
+                    )
+                    continue
+
+                metadata = get_file_metadata(file_id)
+
+                if metadata is None:
+                    send_json(
+                        conn,
+                        create_error(
+                            "File not found for acknowledgement",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_FAILED",
+                        f"{recipient_id} acknowledged missing file {file_id}"
+                    )
+                    continue
+
+                if metadata["recipient_id"] != recipient_id:
+                    send_json(
+                        conn,
+                        create_error(
+                            "Acknowledgement recipient mismatch",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_FAILED",
+                        f"{recipient_id} tried ACK for file {file_id} not addressed to them"
+                    )
+                    continue
+
+                if metadata["status"] != "downloaded":
+                    send_json(
+                        conn,
+                        create_error(
+                            "Acknowledgement is allowed only after successful download",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_FAILED",
+                        f"{recipient_id} tried ACK before successful download for {file_id}"
+                    )
+                    continue
+
+                if authenticated_public_key is None:
+                    send_json(
+                        conn,
+                        create_error(
+                            "No authenticated public key available for acknowledgement verification",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_FAILED",
+                        f"No authenticated public key for {recipient_id}"
+                    )
+                    continue
+
+                ack_signature = base64.b64decode(ack_signature_b64)
+
+                ack_data = build_ack_data(
+                    file_id,
+                    recipient_id,
+                    status,
+                    ack_timestamp
+                )
+
+                if not verify_signature(authenticated_public_key, ack_data, ack_signature):
+                    send_json(
+                        conn,
+                        create_error(
+                            "Invalid acknowledgement signature",
+                            session_id=message.get("session_id"),
+                            seq=message.get("seq", 0) + 1
+                        )
+                    )
+                    log_event(
+                        "ACK_SIGNATURE_FAILED",
+                        f"Invalid ACK signature from {recipient_id} for {file_id}"
+                    )
+                    continue
+
+                response = {
+                    "type": DOWNLOAD_ACK_RESPONSE,
+                    "session_id": message.get("session_id"),
+                    "seq": message.get("seq", 0) + 1,
+                    "timestamp": int(time.time()),
+                    "nonce": generate_nonce(),
+                    "payload": {
+                        "message": "Signed acknowledgement verified",
+                        "file_id": file_id,
+                        "recipient_id": recipient_id,
+                        "status": status
+                    }
+                }
+
+                send_json(conn, response)
+
+                print(
+                    f"[ACK_VERIFIED] "
+                    f"file={file_id[:8]}... "
+                    f"recipient={recipient_id}"
+                )
+
+                log_event(
+                    "DOWNLOAD_ACK",
+                    f"{recipient_id} signed acknowledgement for {file_id}"
+                )
 
             elif msg_type == DOWNLOAD_REQUEST:
                 payload = message["payload"]

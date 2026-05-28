@@ -24,7 +24,9 @@ from cert_manager import (
 from client import (
     ensure_user_keys,
     load_public_key,
+    load_private_key,
     build_signature_data,
+    build_ack_data,
     generate_nonce,
 )
 
@@ -460,6 +462,118 @@ def test_revoked_file():
     sock_receiver.close()
     pass_fail(ok)
 
+def download_ack_request(sock, file_id, recipient_id):
+    recipient_private_key = load_private_key(recipient_id)
+
+    status = "verified"
+    ack_timestamp = int(time.time())
+
+    ack_data = build_ack_data(
+        file_id,
+        recipient_id,
+        status,
+        ack_timestamp
+    )
+
+    ack_signature = sign_message(recipient_private_key, ack_data)
+
+    message = {
+        "type": "DOWNLOAD_ACK",
+        "session_id": "demo-session",
+        "seq": 9,
+        "timestamp": int(time.time()),
+        "nonce": generate_nonce(),
+        "payload": {
+            "file_id": file_id,
+            "recipient_id": recipient_id,
+            "status": status,
+            "ack_timestamp": ack_timestamp,
+            "ack_signature": base64.b64encode(ack_signature).decode()
+        }
+    }
+
+    return send_recv(sock, message)
+
+
+def verify_download_package(download_response):
+    if download_response.get("type") != "DOWNLOAD_RESPONSE":
+        return False
+
+    payload = download_response["payload"]
+    metadata = payload["metadata"]
+
+    sender_public_key = base64.b64decode(metadata["sender_public_key"])
+    signature = base64.b64decode(metadata["signature"])
+
+    signature_data = build_signature_data(
+        metadata["file_id"],
+        metadata["sender_id"],
+        metadata["recipient_id"],
+        metadata["expiration_time"],
+        payload["encrypted_file"],
+        metadata["wrapped_file_key"]
+    )
+
+    return verify_signature(sender_public_key, signature_data, signature)
+
+
+def test_recipient_acknowledgement():
+    print("\n=== Test 10: Signed Recipient Acknowledgement ===")
+
+    sock_sender, _ = open_handshake("AckSender")
+
+    package = make_file_package(
+        "AckSender",
+        "AckReceiver",
+        b"This file requires signed acknowledgement.",
+        "ack.txt"
+    )
+
+    upload_response = upload_package(sock_sender, package)
+    print("\nUpload response:")
+    print_response(upload_response)
+    sock_sender.close()
+
+    sock_receiver, _ = open_handshake("AckReceiver")
+
+    download_response = download_request(
+        sock_receiver,
+        package["file_id"],
+        "AckReceiver"
+    )
+
+    print("\nDownload response:")
+    print_response(download_response)
+
+    signature_ok = verify_download_package(download_response)
+    print(f"\nSender signature verified before ACK: {signature_ok}")
+
+    if signature_ok:
+        ack_response = download_ack_request(
+            sock_receiver,
+            package["file_id"],
+            "AckReceiver"
+        )
+    else:
+        ack_response = {
+            "type": "ERROR",
+            "payload": {
+                "error": "Download package verification failed"
+            }
+        }
+
+    print("\nSigned ACK response:")
+    print_response(ack_response)
+
+    ok = (
+        signature_ok
+        and ack_response.get("type") == "DOWNLOAD_ACK_RESPONSE"
+        and "verified" in ack_response.get("payload", {}).get("message", "").lower()
+    )
+
+    sock_receiver.close()
+    pass_fail(ok)
+
 def run_all():
     test_valid_handshake()
     test_bad_client_proof()
@@ -470,6 +584,7 @@ def run_all():
     test_one_time_download()
     test_expired_file()
     test_revoked_file()
+    test_recipient_acknowledgement()
 
 
 def menu():
@@ -484,7 +599,8 @@ def menu():
         print("7. One-time download")
         print("8. Expired file")
         print("9. Revoked file")
-        print("10. Run all tests")
+        print("10. Signed recipient acknowledgement")
+        print("11. Run all tests")
         print("0. Exit")
         print()
         choice = input("Choose test: ").strip()
@@ -508,6 +624,8 @@ def menu():
         elif choice == "9":
             test_revoked_file()
         elif choice == "10":
+            test_recipient_acknowledgement()
+        elif choice == "11":
             run_all()
             exit()
             print()
