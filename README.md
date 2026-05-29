@@ -21,7 +21,7 @@ CSE4057 – Spring 2026
 python client.py setup-server
 ```
 
----
+
 
 ## 2. Start Server
 
@@ -29,7 +29,7 @@ python client.py setup-server
 python server.py
 ```
 
----
+
 
 ## 3. Start Client
 
@@ -37,7 +37,7 @@ python server.py
 python client.py
 ```
 
----
+
 
 ## 4. Run Security Tests
 
@@ -45,7 +45,7 @@ python client.py
 python demo_tests.py
 ```
 
----
+
 
 # Optional GUI Client
 
