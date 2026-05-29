@@ -12,6 +12,95 @@ CSE4057 – Spring 2026
 
 ---
 
+
+# How to Run
+
+## 1. Initial Setup
+
+```bash
+python client.py setup-server
+```
+
+---
+
+## 2. Start Server
+
+```bash
+python server.py
+```
+
+---
+
+## 3. Start Client
+
+```bash
+python client.py
+```
+
+---
+
+## 4. Run Security Tests
+
+```bash
+python demo_tests.py
+```
+
+---
+
+# Optional GUI Client
+
+The project also includes an optional graphical user interface for easier demonstration and usability.
+
+Before running the system for the first time, initialize the Certificate Authority (CA), server certificates, and required folders:
+
+```bash
+python client.py setup-server
+```
+
+Before running the GUI, make sure the server is already running:
+
+```bash
+python server.py
+```
+
+Then run:
+
+```bash
+python gui_client.py
+```
+
+If `customtkinter` is not installed, install it using:
+
+```bash
+pip install customtkinter
+```
+
+The GUI supports:
+- starting a secure authenticated session,
+- encrypted file upload,
+- expiration-time entry from the interface,
+- visual file listing using card-style views,
+- automatic refresh when switching tabs,
+- selecting files for download without manually typing the file ID,
+- selecting uploaded files for revocation,
+- displaying file status in the interface.
+
+The GUI is only an additional usability layer.
+
+All security decisions are still enforced by the server and the core protocol, including:
+- certificate-based authentication,
+- access control,
+- file encryption,
+- signature verification,
+- replay protection,
+- expiration checks,
+- revocation enforcement,
+- one-time download enforcement,
+- signed recipient acknowledgement verification.
+
+
+---
+
 # Project Overview
 
 This project implements a secure Zero-Trust File Drop System where users can securely upload encrypted files for other users through an untrusted server.
@@ -695,93 +784,6 @@ File-Drop-System/
 │
 └── README.md
 ```
-
----
-
-# How to Run
-
-## 1. Initial Setup
-
-```bash
-python client.py setup-server
-```
-
----
-
-## 2. Start Server
-
-```bash
-python server.py
-```
-
----
-
-## 3. Start Client
-
-```bash
-python client.py
-```
-
----
-
-## 4. Run Security Tests
-
-```bash
-python demo_tests.py
-```
-
----
-
-# Optional GUI Client
-
-The project also includes an optional graphical user interface for easier demonstration and usability.
-
-Lets start with this command for setup the server:
-
-```bash
-python client.py setup-server
-```
-
-Before running the GUI, make sure the server is already running:
-
-```bash
-python server.py
-```
-
-Then run:
-
-```bash
-python gui_client.py
-```
-
-If `customtkinter` is not installed, install it using:
-
-```bash
-pip install customtkinter
-```
-
-The GUI supports:
-- starting a secure authenticated session,
-- encrypted file upload,
-- expiration-time entry from the interface,
-- visual file listing using card-style views,
-- automatic refresh when switching tabs,
-- selecting files for download without manually typing the file ID,
-- selecting uploaded files for revocation,
-- displaying file status in the interface.
-
-The GUI is only an additional usability layer.
-
-All security decisions are still enforced by the server and the core protocol, including:
-- certificate-based authentication,
-- access control,
-- file encryption,
-- signature verification,
-- replay protection,
-- expiration checks,
-- revocation enforcement,
-- one-time download enforcement,
-- signed recipient acknowledgement verification.
 
 ---
 
