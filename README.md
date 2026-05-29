@@ -736,6 +736,12 @@ python demo_tests.py
 
 The project also includes an optional graphical user interface for easier demonstration and usability.
 
+Lets start with this command for setup the server:
+
+```bash
+python client.py setup-server
+```
+
 Before running the GUI, make sure the server is already running:
 
 ```bash
